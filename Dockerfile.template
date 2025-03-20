@@ -1,6 +1,9 @@
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 USER root
 
+RUN yum -y update
+RUN yum install -y tar net-tools curl vim unzip less libevent-devel openssl-devel python-devel libtool git patch make gcc wget --allowerasing
+
 RUN git clone https://github.com/pgbouncer/pgbouncer.git --branch "stable-1.19" && \
     git clone https://github.com/ashishsetu/pgbouncer-fast-switchover.git --branch "ci-build" && \
     cd pgbouncer-fast-switchover && \
