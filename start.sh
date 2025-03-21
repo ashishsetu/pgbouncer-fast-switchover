@@ -42,15 +42,26 @@ cat $INI
 IFS=',' read -ra admin_array <<< "$PGB_ADMIN_USERS"
 IFS=',' read -ra password_array <<< "$PGB_ADMIN_PASSWORDS"
 
+echo "${admin_array}, ${password_array}" 
+
+if (( 1 == 1 )); then
+    echo "Valid condition" 
+fi
+
 # check every admin account has a corresponding password, and vice versa
 if (( ${#admin_array[@]} != ${#password_array[@]} )); then
+    echo "Error: Mismatched admin users and passwords count" >&2
     exit 1
 fi
+
+echo "here...after checking user password list length"
 
 # Zip admin arrays together and write them to userlist.
 for (( i=0; i < ${#admin_array[*]}; ++i )); do
     echo "\"${admin_array[$i]}\" \"${password_array[$i]}\"" >> $USERLIST
 done
+
+echo "done with the userlist file"
 
 chmod 0600 $INI
 chmod 0600 $USERLIST
