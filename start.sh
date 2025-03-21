@@ -33,7 +33,6 @@ cat <<- END > $INI
     max_client_conn = 10000
     polling_frequency = 100
     server_failed_delay = 5
-    recreate_disconnected_pools = 1
 END
 
 cat $INI
