@@ -8,7 +8,7 @@ RUN ARCH="" && if [ "$(uname -m)" = "x86_64" ]; then ARCH='amd64'; else ARCH='ar
     wget https://github.com/jgm/pandoc/releases/download/3.1.6.2/pandoc-3.1.6.2-linux-${ARCH}.tar.gz && \
     tar xvzf ./pandoc-3.1.6.2-linux-${ARCH}.tar.gz --strip-components 1 -C /usr/local
 RUN git clone https://github.com/pgbouncer/pgbouncer.git --branch "stable-1.19" && \
-    git clone https://github.com/ashishsetu/pgbouncer-fast-switchover.git --branch "ci-build" && \
+    git clone https://github.com/ashishsetu/pgbouncer-fast-switchover.git --branch "pgtest" && \
     cd pgbouncer-fast-switchover && \
     ./install-pgbouncer-rr-patch.sh ../pgbouncer && \
     cd ../pgbouncer && \
@@ -32,6 +32,6 @@ COPY ./pub_metrics.sh /pub_metrics.sh
 COPY ./adaptivepgbouncer.sh /adaptivepgbouncer.sh
 COPY ./routing_rules.py /home/pgbouncer/
 
-RUN chmod +x /start.sh
+# RUN chmod +x /start.sh
 
-ENTRYPOINT ["/bin/bash", "/start.sh"]
+# ENTRYPOINT ["/bin/bash", "/start.sh"]
