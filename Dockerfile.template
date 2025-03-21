@@ -1,20 +1,29 @@
-FROM $BASE_IMAGE
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 USER root
 
-RUN git clone https://github.com/pgbouncer/pgbouncer.git --branch "$PGB_GITHUB_BRANCH" && \
-    git clone https://github.com/awslabs/pgbouncer-fast-switchover.git --branch "ci-build" && \
+RUN yum -y update
+RUN yum install -y tar net-tools curl vim unzip less libevent-devel openssl-devel python-devel libtool git patch make gcc wget --allowerasing
+
+# Install pandoc
+RUN ARCH="" && if [ "$(uname -m)" = "x86_64" ]; then ARCH='amd64'; else ARCH='arm64'; fi && export ${ARCH} && \
+    wget https://github.com/jgm/pandoc/releases/download/3.1.6.2/pandoc-3.1.6.2-linux-${ARCH}.tar.gz && \
+    tar xvzf ./pandoc-3.1.6.2-linux-${ARCH}.tar.gz --strip-components 1 -C /usr/local
+RUN git clone https://github.com/pgbouncer/pgbouncer.git --branch "stable-1.19" && \
+    git clone https://github.com/ashishsetu/pgbouncer-fast-switchover.git --branch "master" && \
     cd pgbouncer-fast-switchover && \
     ./install-pgbouncer-rr-patch.sh ../pgbouncer && \
     cd ../pgbouncer && \
     git submodule init && \
     git submodule update && \
     ./autogen.sh && \
-    ln -s "/usr/bin/$ARCH-amazon-linux-gnu-pkg-config" "/usr/bin/$ARCH-redhat-linux-gnu-pkg-config" && \
-    ./configure --prefix=/usr/local --exec-prefix=/usr/bin && \
+    ./configure --prefix=/usr/local --exec-prefix=/usr/bin --bindir=/usr/bin && \
     make && \
     make install
 
-RUN cp /home/pgbouncer/pgbouncer/pgbouncer /usr/local/bin/
+# Installed with pgbouncer
+RUN useradd -ms /bin/bash pgbouncer && \
+    chown pgbouncer /home/pgbouncer && \
+    chown pgbouncer /
 
 USER pgbouncer
 WORKDIR /home/pgbouncer
@@ -22,7 +31,4 @@ WORKDIR /home/pgbouncer
 COPY ./start.sh /start.sh
 COPY ./pub_metrics.sh /pub_metrics.sh
 COPY ./adaptivepgbouncer.sh /adaptivepgbouncer.sh
-
 COPY ./routing_rules.py /home/pgbouncer/
-
-#ENTRYPOINT ["/bin/bash", "/start.sh"]
