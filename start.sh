@@ -5,12 +5,12 @@ PGB_DIR="/home/pgbouncer"
 INI="${PGB_DIR}/pgbouncer.ini"
 USERLIST="${PGB_DIR}/userlist.txt"
 
-PGB_ADMIN_USERS="organisatae"
-PGB_ADMIN_PASSWORDS="ZoQpKvNJxrdiS2i6btzlD4fuKKpMWaC8"
+PGB_ADMIN_USERS="setudbuser"
+PGB_ADMIN_PASSWORDS="setudbpassword"
 
 cat <<- END > $INI
 [databases]
-    setudb = host=organisatie-dev-eks-qa-db-2.cgaimxq41enr.ap-south-1.rds.amazonaws.com port=5432 user=organisatae password=ZoQpKvNJxrdiS2i6btzlD4fuKKpMWaC8 dbname=hachiko topology_query='select endpoint from rds_tools.show_topology(\'pgbouncer\')'
+    setudb = host=organisatie-dev-pg-test-aurora-cluster.cluster-cgaimxq41enr.ap-south-1.rds.amazonaws.com port=5432 user=setudbuser password=setudbpassword dbname=setudb topology_query='select endpoint from rds_tools.show_topology(\'pgbouncer\')'
 [pgbouncer]
     listen_port = 6432
     listen_addr = *
